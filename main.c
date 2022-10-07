@@ -64,20 +64,20 @@ void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_C
         {NULL, NULL}
     };
     tokens = gettokens(ReadFromTheFile);
-    printf("<<<%s\n", options[i].opcode);
-    printf("%s<<<<<<<\n", tokens[0]);
 
     while (options[i].opcode != NULL)
     {
         if(strcmp(options[i].opcode, tokens[0] )== 0)
         {
-            if(i = 0)
+            NotFound = 0;
+            if(i == 0)
             {
-                CheckPush(stack_t **st, char *tokens, unsigned int Line_Count);
+                
+                CheckPush(st, tokens, Line_Count);
             }
             else
             {
-                printf("others");
+                printf("others\n");
             }
            
             break;
@@ -116,7 +116,7 @@ char **gettokens(char *ReadFromTheFile)
     tokens[i] = NULL;
     return (tokens);
 }
-void CheckPush(stack_t **st, char *tokens, unsigned int Line_Count)
+void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count)
 {
     if(isdigit(tokens[1]) != 0)
     {
@@ -127,4 +127,5 @@ void CheckPush(stack_t **st, char *tokens, unsigned int Line_Count)
         fprintf("L%d: usage: push integer\n", Line_Count);
         exit(EXIT_FAILURE);
     }
+    
 }

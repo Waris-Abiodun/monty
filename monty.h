@@ -38,7 +38,7 @@ typedef struct instruction_s
 
 void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_Count);
 char **gettokens(char *ReadFromTheFile);
-void CheckPush(stack_t **st, char *tokens, unsigned int Line_Count);
+void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count);
 
 
 #endif /** MAIN_H **/
