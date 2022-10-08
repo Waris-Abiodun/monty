@@ -59,8 +59,13 @@ void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_C
     int NotFound= 1;
 
     instruction_t options[] = {
-        {"push", NULL},
-        {"pall", NULL},
+        {"push", push},
+        {"pall", pall},
+        {"pint", pint},
+        {"pop", pop},
+        {"swap", swap},
+        {"add", add},
+        {"nop", nop},
         {NULL, NULL}
     };
     tokens = gettokens(ReadFromTheFile);
@@ -77,7 +82,7 @@ void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_C
             }
             else
             {
-                printf("others\n");
+               options[i].f(st, Line_Count);
             }
            
             break;
@@ -94,6 +99,13 @@ void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_C
     free(tokens);
     
 }
+/**
+ * gettokens - function that will split line/sentence into words
+ * 
+ * @ReadFromTheFile: line to read from
+ * Return: the first two words,
+ */
+
 char **gettokens(char *ReadFromTheFile)
 {
     char *token;
@@ -116,16 +128,52 @@ char **gettokens(char *ReadFromTheFile)
     tokens[i] = NULL;
     return (tokens);
 }
+/**
+ * CheckPush - a function that check if the second argument is an integer 
+ * before passing it to push function
+ * @st : we will add the value of the integer we checked to this stack
+ * @tokens: the first two tokens/ words, one is "push" the other is an "int"
+ * @Line_Count : number of line of our file we are executing
+ */
 void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count)
 {
-    if(isdigit(tokens[1]) != 0)
+    char *PushValue;
+    int i = 0;
+
+    PushValue = tokens[1];
+    /** pushValue is a string of character, so we will check each character **/
+    if (PushValue == NULL)
     {
-        printf("push an intger to the task");
-    }
-    else if
-    {
-        fprintf("L%d: usage: push integer\n", Line_Count);
+        fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
         exit(EXIT_FAILURE);
     }
+    while(PushValue[i] != '\0')
+    {
+        if(PushValue[0] == '-' && i == 0);
+        else if(_isdigit(PushValue[i]) != 0)
+        {
+            fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
+            exit(EXIT_FAILURE);
+        }
+        i++;
+    }
+    push(st, atoi(PushValue));
     
+    free(tokens);
+ 
+}
+
+/**
+ * _isdigit - a function to test if the value passed is an integer or not
+ * 
+ * @PushValue: the value received from Checkpush will be test 
+ * Return: 0 if it is an integer , 1 if it is not
+ */
+int _isdigit(int PushValue)
+{
+	if (PushValue >= 48 && PushValue <= 57)
+	{
+		return (0);
+	}
+	return (1);
 }

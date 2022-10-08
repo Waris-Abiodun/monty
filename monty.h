@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef MONTY_H
+#define MONTY_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,10 +35,23 @@ typedef struct instruction_s
         void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-
+/** function that wil help us run the file (main.c) **/
 void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_Count);
 char **gettokens(char *ReadFromTheFile);
+
+/** push functions (main.c and 1.functions.c) **/
+void push(stack_t **st, unsigned int pushValue_n);
 void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count);
+int _isdigit(int PushValue_n);
 
+/** functions to execute the instruction from the users (0-functions.c)**/
+void pall(stack_t **st, unsigned int LineCount);
+void pint(stack_t **st, unsigned int LineCount);
+void pop(stack_t **st, unsigned int LineCount);
+void swap(stack_t **st, unsigned int LineCount);
 
-#endif /** MAIN_H **/
+/** functions to execute the instruction from the users (1-functions.c)**/
+void add(stack_t **st, unsigned int LineCount);
+void nop(stack_t **st, unsigned int LineCount);
+
+#endif /** MONTY_H **/
