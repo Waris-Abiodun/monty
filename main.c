@@ -9,14 +9,13 @@
 
 int main(int argc, char **argv)
 {
-    FILE *fd = NULL;
-    char *ReadFromTheFile = NULL;
-    size_t n;
-    unsigned int Line_Count = 0;
+	FILE *fd = NULL;
+	char *ReadFromTheFile = NULL;
+	size_t n;
+	unsigned int Line_Count = 0;
     char *token;
     int chs;
     stack_t *st = NULL;
-
    if (argc != 2)
    {
        fprintf(stderr, "USAGE: monty file\n");
@@ -32,14 +31,17 @@ int main(int argc, char **argv)
    while(getline(&ReadFromTheFile, &n, fd) != -1)
    {
        Line_Count++;
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>");
        checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
       
        
    }
+   fclose(fd);
 
    return (1);
 
 }
+
 /**
  * checkAndRunOpcode - this is the beginning of execute the command inside the
  * file, the instruction that is read from the file will be tokenized/ split 
@@ -126,6 +128,7 @@ char **gettokens(char *ReadFromTheFile)
         token = strtok(NULL, " \n\t");
     }
     tokens[i] = NULL;
+    free(token);
     return (tokens);
 }
 /**
