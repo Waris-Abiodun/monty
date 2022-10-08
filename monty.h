@@ -1,9 +1,14 @@
 #ifndef MONTY_H
 #define MONTY_H
 
-#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
 #include <string.h>
+
 
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
@@ -54,4 +59,7 @@ void swap(stack_t **st, unsigned int LineCount);
 void add(stack_t **st, unsigned int LineCount);
 void nop(stack_t **st, unsigned int LineCount);
 
+
+/* a function that free all the stacks we used (freeStack.c)*/
+void freeStack(stack_t **st);
 #endif /** MONTY_H **/

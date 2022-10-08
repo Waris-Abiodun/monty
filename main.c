@@ -12,8 +12,8 @@ int main(int argc, char **argv)
     FILE *fd = NULL;
     char *ReadFromTheFile = NULL;
     size_t n;
+    ssize_t lineSize = 0;
     unsigned int Line_Count = 0;
-    char *token;
     int chs;
     stack_t *st = NULL;
 
@@ -29,15 +29,18 @@ int main(int argc, char **argv)
        fprintf(stderr, "Cant open file %s\n", argv[1]);
        exit(EXIT_FAILURE);
    }
-   while(getline(&ReadFromTheFile, &n, fd) != -1)
+   while((lineSize =  getline(&ReadFromTheFile, &n, fd)) != -1)
    {
        Line_Count++;
        checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
       
        
    }
+   free(ReadFromTheFile);
+   freeStack(&st);
+   fclose(fp);
 
-   return (1);
+   return (0);
 
 }
 /**
