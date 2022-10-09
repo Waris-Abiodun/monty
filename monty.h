@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
@@ -17,13 +16,13 @@
  * @next: points to the next element of the stack (or queue)
  *
  * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO
+ * for stack, queues, LIFO, FIFO Holberton project
  */
 typedef struct stack_s
 {
-        int n;
-        struct stack_s *prev;
-        struct stack_s *next;
+	int n;
+	struct stack_s *prev;
+	struct stack_s *next;
 } stack_t;
 
 /**
@@ -32,34 +31,34 @@ typedef struct stack_s
  * @f: function to handle the opcode
  *
  * Description: opcode and its function
- * for stack, queues, LIFO, FIFO
+ * for stack, queues, LIFO, FIFO Holberton project
  */
 typedef struct instruction_s
 {
-        char *opcode;
-        void (*f)(stack_t **stack, unsigned int line_number);
+	char *opcode;
+	void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-/** function that wil help us run the file (main.c) **/
-void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_Count);
-char **gettokens(char *ReadFromTheFile);
+void push(stack_t **, unsigned int);
+void pop(stack_t **, unsigned int);
+void swap(stack_t **, unsigned int);
+void pint(stack_t **, unsigned int);
+void add(stack_t **, unsigned int);
+void nop(stack_t **, unsigned int);
+void pall(stack_t **, unsigned int);
+void sub(stack_t **, unsigned int);
+void add(stack_t **, unsigned int);
+void division(stack_t **, unsigned int);
+void mul(stack_t **, unsigned int);
+void mod(stack_t **, unsigned int);
+void pchar(stack_t **, unsigned int);
+void pstr(stack_t **, unsigned int);
 
-/** push functions (main.c and 1.functions.c) **/
-void push(stack_t **st, unsigned int pushValue_n);
-void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count);
-int _isdigit(int PushValue_n);
+int _isdigit(int);
+void is_opcode(char *, stack_t **, unsigned int);
+char **parse(char *);
+void freestack(stack_t **);
+void check_push(stack_t **, char **, unsigned int);
 
-/** functions to execute the instruction from the users (0-functions.c)**/
-void pall(stack_t **st, unsigned int LineCount);
-void pint(stack_t **st, unsigned int LineCount);
-void pop(stack_t **st, unsigned int LineCount);
-void swap(stack_t **st, unsigned int LineCount);
+#endif
 
-/** functions to execute the instruction from the users (1-functions.c)**/
-void add(stack_t **st, unsigned int LineCount);
-void nop(stack_t **st, unsigned int LineCount);
-
-
-/* a function that free all the stacks we used (freeStack.c)*/
-void freeStack(stack_t **st);
-#endif /** MONTY_H **/

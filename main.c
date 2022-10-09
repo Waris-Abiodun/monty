@@ -1,181 +1,154 @@
 #include "monty.h"
-/**
- * main - a function that read a file from CLI and execute the commands
- * 
- * @argc : it check the number of argument which has to be 2
- * @argv : the file path
- * Return : 0 on succcess, exit on failure 
- */
 
-int main(int argc, char **argv)
+/**
+ * main - entry point
+ * @ac: int variable
+ * @av: char variable
+ *
+ * Return: 0
+*/
+
+int main(int ac, char **av)
 {
-	FILE *fd = NULL;
-	char *ReadFromTheFile = NULL;
-	size_t n;
-	ssize_t lineSize = 0;
-	unsigned int Line_Count = 0;
 	stack_t *st = NULL;
+	char *buffer = NULL;
+	size_t buff_size = 0;
+	int line_count = 0;
+	ssize_t line_size = 0;
+	FILE *fp = NULL;
 
-   if (argc != 2)
-   {
-	   fprintf(stderr, "USAGE: monty file\n");
+	if (ac != 2)
+		fprintf(stderr, "USAGE: monty file\n"), exit(EXIT_FAILURE);
+
+	fp = fopen(av[1], "r");
+	if (!fp)
+	{
+		fprintf(stderr, "Error: Can't open file %s\n", av[1]);
 		exit(EXIT_FAILURE);
-   }
+	}
 
-   fd = fopen(argv[1], "r");
-   if (!fd)
-   {
-	   fprintf(stderr, "Cant open file %s\n", argv[1]);
-	   exit(EXIT_FAILURE);
-   }
-   while((lineSize =  getline(&ReadFromTheFile, &n, fd)) != -1)
-   {
-	   Line_Count++;
-	   checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
-	  
-	   
-   }
-   free(ReadFromTheFile);
-   freeStack(&st);
-   fclose(fd);
+	while ((line_size = getline(&buffer, &buff_size, fp)) != -1)
+	{
+		line_count++;
+		if (buffer[0] != '#')
+			is_opcode(buffer, &st, line_count);
+	}
 
-   return (0);
-
+	free(buffer);
+	freestack(&st);
+	fclose(fp);
+	return (0);
 }
 
 /**
- * checkAndRunOpcode - this is the beginning of execute the command inside the
- * file, the instruction that is read from the file will be tokenized/ split 
- * into words, then we will read the first word, if the command is found
- * we will execute the commamnd if it is not found we will print an error
- * message , and stop the program 
- * 
- * @st : if command found we will use this as our stack/queue 
- * @ReadFromTheFile : line by line instruction to be executed
- * @Line_Count : this help us keep track of the line we are executing so 
- * if error is found we can return the line number
- */
-void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_Count)
+ * parse - entry point
+ * @buffer: char variable
+ *
+ * Return: cmds
+*/
+
+char **parse(char *buffer)
 {
-	char **tokens;
+	char **cmds, *cmd, *delim;
 	int i = 0;
-	int NotFound= 1;
 
-	instruction_t options[] = {
-		{"push", push},
-		{"pall", pall},
-		{"pint", pint},
-		{"pop", pop},
-		{"swap", swap},
-		{"add", add},
-		{"nop", nop},
-		{NULL, NULL}
-	};
-	tokens = gettokens(ReadFromTheFile);
-
-	while (options[i].opcode != NULL)
-	{
-		if(strcmp(options[i].opcode, tokens[0] )== 0)
-		{
-			NotFound = 0;
-			if(i == 0)
-			{
-				
-				CheckPush(st, tokens, Line_Count);
-			}
-			else
-			{
-			   options[i].f(st, Line_Count);
-			}
-		   
-			break;
-		}
-		i++;
-	}
-
-	if (NotFound == 1)
-	{
-		fprintf(stderr, "L%d: unknown instruction %s\n", Line_Count, tokens[0]);
-		free(tokens);
-		exit(EXIT_FAILURE);
-	}
-	free(tokens);
-	
-}
-/**
- * gettokens - function that will split line/sentence into words
- * 
- * @ReadFromTheFile: line to read from
- * Return: the first two words,
- */
-
-char **gettokens(char *ReadFromTheFile)
-{
-	char *token;
-	char **tokens;
-	int i = 0;
-	tokens = malloc((sizeof(char *) * 3));
-	if (tokens == NULL)
+	delim = "\t \n";
+	cmds = malloc(sizeof(char *) * 3);
+	if (cmds == NULL)
 	{
 		fprintf(stderr, "Error: malloc failed\n");
-		free(ReadFromTheFile);
+		free(buffer);
 		exit(EXIT_FAILURE);
 	}
-	token = strtok(ReadFromTheFile, " \n\t");
 
-	while(token != NULL && i < 2)
+	cmd = strtok(buffer, delim);
+	while (cmd != NULL && i < 2)
 	{
-		tokens[i] = token;
+		cmds[i] = cmd;
+		cmd = strtok(NULL, delim);
 		i++;
-		token = strtok(NULL, " \n\t");
 	}
-	tokens[i] = NULL;
-	return (tokens);
+	cmds[i] = NULL;
+	return (cmds);
 }
-/**
- * CheckPush - a function that check if the second argument is an integer 
- * before passing it to push function
- * @st : we will add the value of the integer we checked to this stack
- * @tokens: the first two tokens/ words, one is "push" the other is an "int"
- * @Line_Count : number of line of our file we are executing
- */
-void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count)
-{
-	char *PushValue;
-	int i = 0;
 
-	PushValue = tokens[1];
-	/** pushValue is a string of character, so we will check each character **/
-	if (PushValue == NULL)
+/**
+ * is_opcode - entry point
+ * @buff: char variable
+ * @st: stack_t variable
+ * @ln: unsigned int variable
+*/
+
+void is_opcode(char *buff, stack_t **st, unsigned int ln)
+{
+	char **cmds;
+	instruction_t opts[] = {
+		{"push", push}, {"pall", pall}, {"pint", pint}, {"pop", pop},
+		{"swap", swap}, {"nop", nop}, {"add", add}, {"sub", sub},
+		{"div", division}, {"mul", mul}, {"mod", mod}, {"pchar", pchar},
+		{"pstr", pstr},	{NULL, NULL}
+	};
+	int i = 0, j = 0, len, b = 0, len2;
+
+	cmds = parse(buff);
+	while (cmds[i] != NULL)
 	{
-		fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
-		exit(EXIT_FAILURE);
-	}
-	while(PushValue[i] != '\0')
-	{
-		if(PushValue[0] == '-' && i == 0);
-		else if(_isdigit(PushValue[i]) != 0)
+		j = 0;
+		while (opts[j].opcode != NULL)
 		{
-			fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
+			len = strlen(opts[j].opcode);
+			len2 = strlen(cmds[i]);
+			if (strncmp(opts[j].opcode, cmds[i], len) == 0 &&
+					strncmp(opts[j].opcode, cmds[i], len2) == 0)
+			{ b = 1;
+				if (j == 0)
+					check_push(st, cmds, ln);
+				else
+					opts[j].f(st, ln);
+				break; }
+			j++;
+		}
+		if (b == 0)
+		{
+			fprintf(stderr, "L%d: unknown instruction %s\n", ln, cmds[i]);
+			free(cmds), freestack(st);
 			exit(EXIT_FAILURE);
 		}
 		i++;
 	}
-	push(st, atoi(PushValue));
- 
+	free(cmds);
 }
 
 /**
- * _isdigit - a function to test if the value passed is an integer or not
- * 
- * @PushValue: the value received from Checkpush will be test 
- * Return: 0 if it is an integer , 1 if it is not
- */
-int _isdigit(int PushValue)
+ * check_push - entry point
+ * @st: stack_t variable
+ * @cmds: char variable
+ * @ln: unsigned int
+*/
+
+void check_push(stack_t **st, char **cmds, unsigned int ln)
 {
-	if (PushValue >= 48 && PushValue <= 57)
+	int i = 0, b = 0;
+	char *cmds1;
+
+	if (cmds[1] == NULL)
 	{
-		return (0);
+		fprintf(stderr, "L%d: usage: push integer\n", ln);
+		free(cmds), freestack(st);
+		exit(EXIT_FAILURE);
 	}
-	return (1);
+	cmds1 = cmds[1];
+	while (cmds1[i] != '\0')
+	{
+		if (cmds1[0] == '-' && b == 0)
+			i++, b = 1;
+		if (_isdigit(cmds1[i]) == 0)
+		{
+			fprintf(stderr, "L%d: usage: push integer\n", ln);
+			free(cmds), freestack(st);
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	push(st, atoi(cmds1));
 }
