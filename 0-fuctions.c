@@ -16,7 +16,6 @@ void push(stack_t **st, unsigned int pushValue_n)
         fprintf(stderr, "Error: malloc failed\n");
         exit(EXIT_FAILURE);
     }
-
     if((*st) == NULL)
     {
         stack->n = pushValue_n;

@@ -9,14 +9,21 @@
 
 int main(int argc, char **argv)
 {
+<<<<<<< HEAD
     FILE *fd = NULL;
     char *ReadFromTheFile = NULL;
     size_t n;
     ssize_t lineSize = 0;
     unsigned int Line_Count = 0;
+=======
+	FILE *fd = NULL;
+	char *ReadFromTheFile = NULL;
+	size_t n;
+	unsigned int Line_Count = 0;
+    char *token;
+>>>>>>> 71a8a3bd0689ca1ced19228434a28a819d2c687d
     int chs;
     stack_t *st = NULL;
-
    if (argc != 2)
    {
        fprintf(stderr, "USAGE: monty file\n");
@@ -32,17 +39,23 @@ int main(int argc, char **argv)
    while((lineSize =  getline(&ReadFromTheFile, &n, fd)) != -1)
    {
        Line_Count++;
+	printf(">>>>>>>>>>>>>>>>>>>>>>>>>");
        checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
       
        
    }
+<<<<<<< HEAD
    free(ReadFromTheFile);
    freeStack(&st);
    fclose(fp);
+=======
+   fclose(fd);
+>>>>>>> 71a8a3bd0689ca1ced19228434a28a819d2c687d
 
    return (0comm);
 
 }
+
 /**
  * checkAndRunOpcode - this is the beginning of execute the command inside the
  * file, the instruction that is read from the file will be tokenized/ split 
@@ -129,6 +142,7 @@ char **gettokens(char *ReadFromTheFile)
         token = strtok(NULL, " \n\t");
     }
     tokens[i] = NULL;
+    free(token);
     return (tokens);
 }
 /**
