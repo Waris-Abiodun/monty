@@ -1,6 +1,6 @@
 #include "monty.h" 
 
-void freeStack(stack_t **st);
+void freeStack(stack_t **st)
 {
 	while ((*st) != NULL)
 	{
