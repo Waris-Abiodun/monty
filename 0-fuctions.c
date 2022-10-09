@@ -14,6 +14,7 @@ void push(stack_t **st, unsigned int pushValue_n)
     if(stack == NULL)
     {
         fprintf(stderr, "Error: malloc failed\n");
+        freeStack(st);
         exit(EXIT_FAILURE);
     }
     if((*st) == NULL)
@@ -142,7 +143,7 @@ void swap(stack_t **st, unsigned int LineCount)
         exit(EXIT_FAILURE);
     }
     (*st)->prev = (*st)->next;
-     (*st)->next = (*st)->next->next;
+    (*st)->next = (*st)->next->next;
     (*st)->next->prev =  (*st);
    
     (*st)->prev->next = (*st);

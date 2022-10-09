@@ -9,50 +9,37 @@
 
 int main(int argc, char **argv)
 {
-<<<<<<< HEAD
-    FILE *fd = NULL;
-    char *ReadFromTheFile = NULL;
-    size_t n;
-    ssize_t lineSize = 0;
-    unsigned int Line_Count = 0;
-=======
 	FILE *fd = NULL;
 	char *ReadFromTheFile = NULL;
 	size_t n;
+	ssize_t lineSize = 0;
 	unsigned int Line_Count = 0;
-    char *token;
->>>>>>> 71a8a3bd0689ca1ced19228434a28a819d2c687d
-    int chs;
-    stack_t *st = NULL;
+	stack_t *st = NULL;
+
    if (argc != 2)
    {
-       fprintf(stderr, "USAGE: monty file\n");
-        exit(EXIT_FAILURE);
+	   fprintf(stderr, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
    }
 
    fd = fopen(argv[1], "r");
    if (!fd)
    {
-       fprintf(stderr, "Cant open file %s\n", argv[1]);
-       exit(EXIT_FAILURE);
+	   fprintf(stderr, "Cant open file %s\n", argv[1]);
+	   exit(EXIT_FAILURE);
    }
    while((lineSize =  getline(&ReadFromTheFile, &n, fd)) != -1)
    {
-       Line_Count++;
-	printf(">>>>>>>>>>>>>>>>>>>>>>>>>");
-       checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
-      
-       
+	   Line_Count++;
+	   checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
+	  
+	   
    }
-<<<<<<< HEAD
    free(ReadFromTheFile);
    freeStack(&st);
-   fclose(fp);
-=======
    fclose(fd);
->>>>>>> 71a8a3bd0689ca1ced19228434a28a819d2c687d
 
-   return (0comm);
+   return (0);
 
 }
 
@@ -70,50 +57,50 @@ int main(int argc, char **argv)
  */
 void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_Count)
 {
-    char **tokens;
-    int i = 0;
-    int NotFound= 1;
+	char **tokens;
+	int i = 0;
+	int NotFound= 1;
 
-    instruction_t options[] = {
-        {"push", push},
-        {"pall", pall},
-        {"pint", pint},
-        {"pop", pop},
-        {"swap", swap},
-        {"add", add},
-        {"nop", nop},
-        {NULL, NULL}
-    };
-    tokens = gettokens(ReadFromTheFile);
+	instruction_t options[] = {
+		{"push", push},
+		{"pall", pall},
+		{"pint", pint},
+		{"pop", pop},
+		{"swap", swap},
+		{"add", add},
+		{"nop", nop},
+		{NULL, NULL}
+	};
+	tokens = gettokens(ReadFromTheFile);
 
-    while (options[i].opcode != NULL)
-    {
-        if(strcmp(options[i].opcode, tokens[0] )== 0)
-        {
-            NotFound = 0;
-            if(i == 0)
-            {
-                
-                CheckPush(st, tokens, Line_Count);
-            }
-            else
-            {
-               options[i].f(st, Line_Count);
-            }
-           
-            break;
-        }
-        i++;
-    }
+	while (options[i].opcode != NULL)
+	{
+		if(strcmp(options[i].opcode, tokens[0] )== 0)
+		{
+			NotFound = 0;
+			if(i == 0)
+			{
+				
+				CheckPush(st, tokens, Line_Count);
+			}
+			else
+			{
+			   options[i].f(st, Line_Count);
+			}
+		   
+			break;
+		}
+		i++;
+	}
 
-    if (NotFound == 1)
-    {
-        fprintf(stderr, "L%d: unknown instruction %s\n", Line_Count, tokens[0]);
-        free(tokens);
-        exit(EXIT_FAILURE);
-    }
-    free(tokens);
-    
+	if (NotFound == 1)
+	{
+		fprintf(stderr, "L%d: unknown instruction %s\n", Line_Count, tokens[0]);
+		free(tokens);
+		exit(EXIT_FAILURE);
+	}
+	free(tokens);
+	
 }
 /**
  * gettokens - function that will split line/sentence into words
@@ -124,26 +111,26 @@ void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_C
 
 char **gettokens(char *ReadFromTheFile)
 {
-    char *token;
-    char **tokens;
-    int i = 0;
-    tokens = malloc((sizeof(char *) * 3));
-    if (tokens == NULL)
-    {
-        fprintf(stderr, "Error: malloc failed\n");
-        exit(EXIT_FAILURE);
-    }
-    token = strtok(ReadFromTheFile, " \n\t");
+	char *token;
+	char **tokens;
+	int i = 0;
+	tokens = malloc((sizeof(char *) * 3));
+	if (tokens == NULL)
+	{
+		fprintf(stderr, "Error: malloc failed\n");
+		free(ReadFromTheFile);
+		exit(EXIT_FAILURE);
+	}
+	token = strtok(ReadFromTheFile, " \n\t");
 
-    while(token != NULL & i < 2)
-    {
-        tokens[i] = token;
-        i++;
-        token = strtok(NULL, " \n\t");
-    }
-    tokens[i] = NULL;
-    free(token);
-    return (tokens);
+	while(token != NULL & i < 2)
+	{
+		tokens[i] = token;
+		i++;
+		token = strtok(NULL, " \n\t");
+	}
+	tokens[i] = NULL;
+	return (tokens);
 }
 /**
  * CheckPush - a function that check if the second argument is an integer 
@@ -154,29 +141,27 @@ char **gettokens(char *ReadFromTheFile)
  */
 void CheckPush(stack_t **st, char **tokens, unsigned int Line_Count)
 {
-    char *PushValue;
-    int i = 0;
+	char *PushValue;
+	int i = 0;
 
-    PushValue = tokens[1];
-    /** pushValue is a string of character, so we will check each character **/
-    if (PushValue == NULL)
-    {
-        fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
-        exit(EXIT_FAILURE);
-    }
-    while(PushValue[i] != '\0')
-    {
-        if(PushValue[0] == '-' && i == 0);
-        else if(_isdigit(PushValue[i]) != 0)
-        {
-            fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
-            exit(EXIT_FAILURE);
-        }
-        i++;
-    }
-    push(st, atoi(PushValue));
-    
-    free(tokens);
+	PushValue = tokens[1];
+	/** pushValue is a string of character, so we will check each character **/
+	if (PushValue == NULL)
+	{
+		fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
+		exit(EXIT_FAILURE);
+	}
+	while(PushValue[i] != '\0')
+	{
+		if(PushValue[0] == '-' && i == 0);
+		else if(_isdigit(PushValue[i]) != 0)
+		{
+			fprintf(stderr, "L%d: usage: push integer\n", Line_Count);
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	push(st, atoi(PushValue));
  
 }
 
