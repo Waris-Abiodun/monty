@@ -1,154 +1,103 @@
 #include "monty.h"
 
+global_t vglo;
+
 /**
- * main - entry point
- * @ac: int variable
- * @av: char variable
+ * free_vglo - frees the global variables
  *
- * Return: 0
-*/
-
-int main(int ac, char **av)
+ * Return: no return
+ */
+void free_vglo(void)
 {
-	stack_t *st = NULL;
-	char *buffer = NULL;
-	size_t buff_size = 0;
-	int line_count = 0;
-	ssize_t line_size = 0;
-	FILE *fp = NULL;
+	free_dlistint(vglo.head);
+	free(vglo.buffer);
+	fclose(vglo.fd);
+}
 
-	if (ac != 2)
-		fprintf(stderr, "USAGE: monty file\n"), exit(EXIT_FAILURE);
+/**
+ * start_vglo - initializes the global variables
+ *
+ * @fd: file descriptor
+ * Return: no return
+ */
+void start_vglo(FILE *fd)
+{
+	vglo.lifo = 1;
+	vglo.cont = 1;
+	vglo.arg = NULL;
+	vglo.head = NULL;
+	vglo.fd = fd;
+	vglo.buffer = NULL;
+}
 
-	fp = fopen(av[1], "r");
-	if (!fp)
+/**
+ * check_input - checks if the file exists and if the file can
+ * be opened
+ *
+ * @argc: argument count
+ * @argv: argument vector
+ * Return: file struct
+ */
+FILE *check_input(int argc, char *argv[])
+{
+	FILE *fd;
+
+	if (argc == 1 || argc > 2)
 	{
-		fprintf(stderr, "Error: Can't open file %s\n", av[1]);
+		dprintf(2, "USAGE: monty file\n");
 		exit(EXIT_FAILURE);
 	}
 
-	while ((line_size = getline(&buffer, &buff_size, fp)) != -1)
+	fd = fopen(argv[1], "r");
+
+	if (fd == NULL)
 	{
-		line_count++;
-		if (buffer[0] != '#')
-			is_opcode(buffer, &st, line_count);
+		dprintf(2, "Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
 	}
 
-	free(buffer);
-	freestack(&st);
-	fclose(fp);
+	return (fd);
+}
+
+/**
+ * main - Entry point
+ *
+ * @argc: argument count
+ * @argv: argument vector
+ * Return: 0 on success
+ */
+int main(int argc, char *argv[])
+{
+	void (*f)(stack_t **stack, unsigned int line_number);
+	FILE *fd;
+	size_t size = 256;
+	ssize_t nlines = 0;
+	char *lines[2] = {NULL, NULL};
+
+	fd = check_input(argc, argv);
+	start_vglo(fd);
+	nlines = getline(&vglo.buffer, &size, fd);
+	while (nlines != -1)
+	{
+		lines[0] = _strtoky(vglo.buffer, " \t\n");
+		if (lines[0] && lines[0][0] != '#')
+		{
+			f = get_opcodes(lines[0]);
+			if (!f)
+			{
+				dprintf(2, "L%u: ", vglo.cont);
+				dprintf(2, "unknown instruction %s\n", lines[0]);
+				free_vglo();
+				exit(EXIT_FAILURE);
+			}
+			vglo.arg = _strtoky(NULL, " \t\n");
+			f(&vglo.head, vglo.cont);
+		}
+		nlines = getline(&vglo.buffer, &size, fd);
+		vglo.cont++;
+	}
+
+	free_vglo();
+
 	return (0);
-}
-
-/**
- * parse - entry point
- * @buffer: char variable
- *
- * Return: cmds
-*/
-
-char **parse(char *buffer)
-{
-	char **cmds, *cmd, *delim;
-	int i = 0;
-
-	delim = "\t \n";
-	cmds = malloc(sizeof(char *) * 3);
-	if (cmds == NULL)
-	{
-		fprintf(stderr, "Error: malloc failed\n");
-		free(buffer);
-		exit(EXIT_FAILURE);
-	}
-
-	cmd = strtok(buffer, delim);
-	while (cmd != NULL && i < 2)
-	{
-		cmds[i] = cmd;
-		cmd = strtok(NULL, delim);
-		i++;
-	}
-	cmds[i] = NULL;
-	return (cmds);
-}
-
-/**
- * is_opcode - entry point
- * @buff: char variable
- * @st: stack_t variable
- * @ln: unsigned int variable
-*/
-
-void is_opcode(char *buff, stack_t **st, unsigned int ln)
-{
-	char **cmds;
-	instruction_t opts[] = {
-		{"push", push}, {"pall", pall}, {"pint", pint}, {"pop", pop},
-		{"swap", swap}, {"nop", nop}, {"add", add}, {"sub", sub},
-		{"div", division}, {"mul", mul}, {"mod", mod}, {"pchar", pchar},
-		{"pstr", pstr},	{NULL, NULL}
-	};
-	int i = 0, j = 0, len, b = 0, len2;
-
-	cmds = parse(buff);
-	while (cmds[i] != NULL)
-	{
-		j = 0;
-		while (opts[j].opcode != NULL)
-		{
-			len = strlen(opts[j].opcode);
-			len2 = strlen(cmds[i]);
-			if (strncmp(opts[j].opcode, cmds[i], len) == 0 &&
-					strncmp(opts[j].opcode, cmds[i], len2) == 0)
-			{ b = 1;
-				if (j == 0)
-					check_push(st, cmds, ln);
-				else
-					opts[j].f(st, ln);
-				break; }
-			j++;
-		}
-		if (b == 0)
-		{
-			fprintf(stderr, "L%d: unknown instruction %s\n", ln, cmds[i]);
-			free(cmds), freestack(st);
-			exit(EXIT_FAILURE);
-		}
-		i++;
-	}
-	free(cmds);
-}
-
-/**
- * check_push - entry point
- * @st: stack_t variable
- * @cmds: char variable
- * @ln: unsigned int
-*/
-
-void check_push(stack_t **st, char **cmds, unsigned int ln)
-{
-	int i = 0, b = 0;
-	char *cmds1;
-
-	if (cmds[1] == NULL)
-	{
-		fprintf(stderr, "L%d: usage: push integer\n", ln);
-		free(cmds), freestack(st);
-		exit(EXIT_FAILURE);
-	}
-	cmds1 = cmds[1];
-	while (cmds1[i] != '\0')
-	{
-		if (cmds1[0] == '-' && b == 0)
-			i++, b = 1;
-		if (_isdigit(cmds1[i]) == 0)
-		{
-			fprintf(stderr, "L%d: usage: push integer\n", ln);
-			free(cmds), freestack(st);
-			exit(EXIT_FAILURE);
-		}
-		i++;
-	}
-	push(st, atoi(cmds1));
 }
