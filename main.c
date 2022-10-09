@@ -123,7 +123,7 @@ char **gettokens(char *ReadFromTheFile)
 	}
 	token = strtok(ReadFromTheFile, " \n\t");
 
-	while(token != NULL & i < 2)
+	while(token != NULL && i < 2)
 	{
 		tokens[i] = token;
 		i++;
