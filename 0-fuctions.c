@@ -43,7 +43,7 @@ void push(stack_t **st, unsigned int pushValue_n)
 void pall(stack_t **st, unsigned int LineCount)
 {
     stack_t *tmp = NULL;
-    void(LineCount);
+    (void)LineCount;
 
     tmp = malloc(sizeof(stack_t));
     if (tmp == NULL)
