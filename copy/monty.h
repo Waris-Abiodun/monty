@@ -57,7 +57,15 @@ void swap(stack_t **st, unsigned int LineCount);
 
 /** functions to execute the instruction from the users (1-functions.c)**/
 void add(stack_t **st, unsigned int LineCount);
+void sub(stack_t **st, unsigned int LineCount);
+void mul(stack_t **st, unsigned int LineCount);
+void Div(stack_t **st, unsigned int LineCount);
+void mod(stack_t **st, unsigned int LineCount);
+
+/** functions to execute the instruction from the users (2-functions.c) **/
 void nop(stack_t **st, unsigned int LineCount);
+void pchar(stack_t **st, unsigned int LineCount);
+void pstr(stack_t **st, unsigned int LineCount);
 
 
 /* a function that free all the stacks we used (freeStack.c)*/

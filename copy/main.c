@@ -31,7 +31,10 @@ int main(int argc, char **argv)
    while((lineSize =  getline(&ReadFromTheFile, &n, fd)) != -1)
    {
 	   Line_Count++;
-	   checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
+	   if(ReadFromTheFile[0] != '#')
+	   {
+		   checkAndRunOpcode(&st, ReadFromTheFile, Line_Count);
+	   }
 	  
 	   
    }
@@ -69,6 +72,12 @@ void checkAndRunOpcode(stack_t **st, char * ReadFromTheFile, unsigned int Line_C
 		{"swap", swap},
 		{"add", add},
 		{"nop", nop},
+		{"sub", sub},
+		{"div", Div},
+		{"mul", mul},
+		{"mod", mod},
+		{"pchar", pchar},
+		{"pstr", pstr},
 		{NULL, NULL}
 	};
 	tokens = gettokens(ReadFromTheFile);
